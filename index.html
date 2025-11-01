@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="shortcut icon" type="C:\Users\Windows 11\Pictures\kupals.png" href="C:\Users\Windows 11\Pictures\kupals.png">
+  <title>Group 2 Portfolio</title>
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+
+  <style>
+  :root {
+    --bg-color: #f8f8f2;
+    --text-color: #111;
+    --subtext-color: #555;
+    --btn-bg: #111;
+    --btn-text: #fff;
+    --accent: #4e9eff;
+  }
+
+  [data-theme="dark"] {
+    --bg-color: #111;
+    --text-color: #f8f8f2;
+    --subtext-color: #bbb;
+    --btn-bg: #fff;
+    --btn-text: #111;
+    --accent: #4e9eff;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+    transition: all 0.3s ease-in-out;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg-color);
+    color: var(--text-color);
+    text-align: center;
+    overflow-x: hidden;
+    opacity: 0;
+    animation: fadeInBody 1.2s ease forwards;
+  }
+
+  @keyframes fadeInBody { from {opacity: 0;} to {opacity: 1;} }
+
+  header {
+    padding: 30px 20px 10px;
+    position: relative;
+    opacity: 0;
+    transform: translateY(-30px);
+    animation: fadeInDown 1s ease forwards 0.3s;
+  }
+
+  @keyframes fadeInDown {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  h1 { color: var(--text-color); font-size: 2rem; margin-bottom: 6px; }
+  p { color: var(--subtext-color); max-width: 650px; margin: 0 auto 20px; line-height: 1.4; }
+
+  h2 { color: var(--text-color); margin-top: 20px; margin-bottom: 12px; font-size: 1.5rem; }
+
+  .theme-toggle {
+    position: absolute;
+    top: 25px;
+    right: 30px;
+    background: none;
+    border: none;
+    font-size: 1.7rem;
+    color: var(--text-color);
+    cursor: pointer;
+    transition: transform 0.3s ease, color 0.3s ease;
+  }
+
+  .theme-toggle:hover {
+    transform: scale(1.2);
+    color: var(--accent);
+  }
+
+  .members {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+    justify-items: center;
+    padding: 0 10px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .member {
+  background: var(--bg-color);
+  color: var(--text-color);
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 20px 24px;
+  width: 230px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(40px);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] .member {
+  background: #1e1e1e;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 6px 18px rgba(255, 255, 255, 0.08);
+}
+
+.member:hover {
+  transform: translateY(-8px) scale(1.03);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+}
+
+[data-theme="dark"] .member:hover {
+  box-shadow: 0 10px 25px rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .member {
+  background: #1a1a1a; /* slightly lighter than body for contrast */
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.05);
+}
+
+  .member.visible {
+    opacity: 1;
+    transform: translateY(0);
+    transition: all 0.9s ease-out;
+  }
+
+  .member:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+  }
+
+  .profile-pic {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    transition: transform 0.3s ease;
+  }
+
+  .member:hover .profile-pic { transform: scale(1.05); }
+
+  .member h3 {
+  margin: 6px 0 3px;
+  color: #111;
+  font-size: 1rem;
+  line-height: 1.2;
+  white-space: nowrap;
+  transition: color 0.3s ease;
+}
+
+/* 🌙 Brighten member names in dark mode */
+body[data-theme="dark"] .member h3 {
+  color: #f1f1f1; /* pure white for better visibility */
+}
+
+  .member p {
+  margin: 0;
+  color: var(--subtext-color);
+  font-size: 0.85rem;
+}
+
+[data-theme="dark"] .member p {
+  color: var(--subtext-color);
+}
+
+  .social-icons {
+    margin-top: 8px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .social-icons a {
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: color 0.3s ease, transform 0.3s ease;
+  }
+
+  .social-icons a:hover {
+    color: #3276dc;
+    transform: scale(1.15);
+  }
+
+  .group-photo-container {
+    margin-top: 40px;
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 1s ease-out;
+  }
+
+  .group-photo-container.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .group-photo {
+    width: 60%;
+    max-width: 650px;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.2);
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+  }
+
+  .group-photo:hover {
+    transform: scale(1.03);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  }
+
+  footer {
+    margin-top: 30px;
+    padding: 12px;
+    font-size: 0.85rem;
+    color: var(--subtext-color);
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeSlideUp 1.2s ease forwards 0.6s;
+  }
+
+  @keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Responsive Layout */
+  @media (max-width: 992px) {
+    .members {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+    .group-photo { width: 70%; }
+  }
+
+  @media (max-width: 600px) {
+    h1 { font-size: 1.6rem; }
+    p { font-size: 0.9rem; }
+    .members { grid-template-columns: 1fr; }
+    .member { width: 220px; }
+    .group-photo { width: 80%; }
+    .theme-toggle { right: 15px; top: 20px; }
+  }
+
+  .member h3 {
+  margin: 6px 0 3px;
+  color: var(--text-color);
+  font-size: 1rem;
+  line-height: 1.2;
+  white-space: nowrap;
+  transition: color 0.3s ease;
+}
+
+[data-theme="dark"] .member h3 {
+  color: #ffffff; /* makes names bright in dark mode */
+}
+
+.member {
+  width: 230px; /* slightly wider so names fit perfectly */
+}
+
+.member:hover {
+  transform: translateY(-8px) scale(1.03);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+/* Highlight the role text on hover */
+.member:hover p {
+  color: var(--accent);
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.member h3 {
+  margin: 6px 0 3px;
+  color: var(--text-color); /* uses light/dark theme text color */
+  font-size: 1rem;
+  line-height: 1.2;
+  white-space: nowrap;
+  transition: color 0.3s ease;
+}
+
+/* Make member names bright in dark mode */
+[data-theme="dark"] .member h3 {
+  color: #ffffff !important; /* bright white for visibility */
+}
+  </style>
+
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+  <header>
+    <h1>Welcome to Our Group Portfolio 👥🗂️</h1>
+    <p>Hello! We are <strong>Group 2</strong>, a passionate team of aspiring developers and designers dedicated to creating innovative, user-friendly, and visually engaging digital projects. Each member brings unique skills and creativity, working together to turn ideas into meaningful and functional web experiences.</p>
+    <button class="theme-toggle" id="theme-toggle"><i class='bx bx-moon'></i></button>
+  </header>
+
+  <section>
+    <h2>Meet Our Members</h2>
+    <div class="members">
+      <!-- all original cards remain unchanged -->
+      <div class="member fade-up" onclick="openPortfolio('karl.html')">
+        <img src="C:\Users\Windows 11\Documents\2nd year BSIT\Portfolio Webpage GE ELEC Activity\almojera.jpg" alt="Almojera, Jhon Karl" class="profile-pic">
+        <h3>Jhon Karl M. Almojera</h3>
+        <p>Frontend Developer</p>
+        <div class="social-icons">
+          <a href="https://facebook.com/" target="_blank"><i class="fab fa-facebook"></i></a>
+          <a href="https://instagram.com/" target="_blank"><i class="fab fa-instagram"></i></a>
+          <a href="https://tiktok.com/" target="_blank"><i class="fab fa-tiktok"></i></a>
+        </div>
+      </div>
+
+      <div class="member fade-up" onclick="openPortfolio('myke.html')">
+        <img src="C:\Users\Windows 11\Documents\2nd year BSIT\Portfolio Webpage GE ELEC Activity\bautista.jpg" alt="Bautista, Myke Eleazhar H." class="profile-pic">
+        <h3>Myke Eleazhar H. Bautista</h3>
+        <p>Backend Developer</p>
+        <div class="social-icons">
+          <a href="https://facebook.com/" target="_blank"><i class="fab fa-facebook"></i></a>
+          <a href="https://instagram.com/" target="_blank"><i class="fab fa-instagram"></i></a>
+          <a href="https://tiktok.com/" target="_blank"><i class="fab fa-tiktok"></i></a>
+        </div>
+      </div>
+
+      <div class="member fade-up" onclick="openPortfolio('besa.html')">
+        <img src="C:\Users\Windows 11\Documents\2nd year BSIT\Portfolio Webpage GE ELEC Activity\karl.jpg" alt="Besa, Karl Ashley S." class="profile-pic">
+        <h3>Karl Ashley S. Besa</h3>
+        <p>UI/UX Designer</p>
+        <div class="social-icons">
+          <a href="https://facebook.com/" target="_blank"><i class="fab fa-facebook"></i></a>
+          <a href="https://instagram.com/" target="_blank"><i class="fab fa-instagram"></i></a>
+          <a href="https://tiktok.com/" target="_blank"><i class="fab fa-tiktok"></i></a>
+        </div>
+      </div>
+
+      <div class="member fade-up" onclick="openPortfolio('dave.html')">
+        <img src="C:\Users\Windows 11\Documents\2nd year BSIT\Portfolio Webpage GE ELEC Activity\buccat.jpg" alt="Buccat, Dave Mathew T." class="profile-pic">
+        <h3>Dave Mathew T. Buccat</h3>
+        <p>Project Manager</p>
+        <div class="social-icons">
+          <a href="https://facebook.com/" target="_blank"><i class="fab fa-facebook"></i></a>
+          <a href="https://instagram.com/" target="_blank"><i class="fab fa-instagram"></i></a>
+          <a href="https://tiktok.com/" target="_blank"><i class="fab fa-tiktok"></i></a>
+        </div>
+      </div>
+
+      <div class="member fade-up" onclick="openPortfolio('reniel.html')">
+        <img src="C:\Users\Windows 11\Documents\2nd year BSIT\Portfolio Webpage GE ELEC Activity\diaz.jpg" alt="Diaz, Reniel" class="profile-pic">
+        <h3>Mark Reniel J. Diaz</h3>
+        <p>Quality Analyst</p>
+        <div class="social-icons">
+          <a href="https://facebook.com/" target="_blank"><i class="fab fa-facebook"></i></a>
+          <a href="https://instagram.com/" target="_blank"><i class="fab fa-instagram"></i></a>
+          <a href="https://tiktok.com/" target="_blank"><i class="fab fa-tiktok"></i></a>
+        </div>
+      </div>
+
+      <div class="member fade-up" onclick="openPortfolio('stephen.html')">
+        <img src="C:\Users\Windows 11\Documents\2nd year BSIT\Portfolio Webpage GE ELEC Activity\landingin.jpg" alt="Landingin, Stephen M." class="profile-pic">
+        <h3>Stephen M. Landingin</h3>
+        <p>Database Engineer</p>
+        <div class="social-icons">
+          <a href="https://facebook.com/" target="_blank"><i class="fab fa-facebook"></i></a>
+          <a href="https://instagram.com/" target="_blank"><i class="fab fa-instagram"></i></a>
+          <a href="https://tiktok.com/" target="_blank"><i class="fab fa-tiktok"></i></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="group-photo-container fade-up">
+      <img src="C:/Users/Windows 11/Pictures/kupals.png" alt="Group 2 Team Picture" class="group-photo">
+    </div>
+  </section>
+
+  <footer>
+    <p>© 2025 Group 2 – Our Team Portfolio</p>
+  </footer>
+
+  <script>
+    function openPortfolio(page) {
+      window.open(page, "_blank");
+    }
+
+    // === Dark/White Mode Toggle ===
+    const toggle = document.getElementById('theme-toggle');
+    const icon = toggle.querySelector('i');
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.body.dataset.theme = savedTheme;
+    icon.classList.toggle('bx-sun', savedTheme === 'dark');
+    icon.classList.toggle('bx-moon', savedTheme === 'light');
+
+    toggle.addEventListener('click', () => {
+      const current = document.body.dataset.theme === 'dark' ? 'light' : 'dark';
+      document.body.dataset.theme = current;
+      localStorage.setItem('theme', current);
+      icon.classList.toggle('bx-sun', current === 'dark');
+      icon.classList.toggle('bx-moon', current === 'light');
+    });
+
+    // Smooth fade-up animation on scroll
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('visible');
+      });
+    }, { threshold: 0.2 });
+
+    document.querySelectorAll('.member, .group-photo-container').forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>
