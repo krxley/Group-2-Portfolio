@@ -213,9 +213,7 @@ footer.site-footer{
 a{color:inherit}
 a.external::after{content:'↗';font-size:0.8rem;margin-left:0.35rem;opacity:0.6}
 
-/* Extended Custom CSS for Group-2 Portfolio
-   Includes additional animations, hover effects, and refined layouts
-*/
+/* Additional animations, hover effects, and refined layouts */
 
 :root{
   --bg: #0f1724;
@@ -474,8 +472,6 @@ body{
   100%{background-position:0% 50%;}
 }
 
-/* Enhanced CSS for Group-2 Portfolio with Scroll Animations */
-
 /* Parallax Hero */
 .hero {
   position: relative;
@@ -613,14 +609,358 @@ body {
   100% { background-position: 0% 50%; }
 }
 
-/* JavaScript Helper for Scroll Animations (add in your JS file)
-------------------------------------
-window.addEventListener('scroll', () => {
-  document.querySelectorAll('[data-animate]').forEach(el => {
-    const rect = el.getBoundingClientRect();
-    if (rect.top < window.innerHeight - 100) {
-      el.classList.add('visible');
-    }
-  });
-});
------------------------------------- */
+/* Global Reset and Smooth Behavior */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+html {
+  scroll-behavior: smooth;
+  font-family: 'Poppins', sans-serif;
+  overflow-x: hidden;
+}
+
+body {
+  background: linear-gradient(-45deg, #0f1724, #0b1220, #14243c, #0b1b2d);
+  background-size: 400% 400%;
+  animation: gradientMove 12s ease infinite;
+  color: #e2e8f0;
+  line-height: 1.6;
+}
+
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Navigation Enhancements */
+nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(10, 25, 47, 0.85);
+  backdrop-filter: blur(10px);
+  z-index: 999;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  transition: background 0.4s ease;
+}
+nav.scrolled {
+  background: rgba(15, 32, 63, 0.95);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+}
+.nav-links a {
+  color: #e2e8f0;
+  text-decoration: none;
+  font-weight: 500;
+  margin: 0 15px;
+  position: relative;
+}
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: -4px; left: 0;
+  width: 0; height: 2px;
+  background: var(--accent);
+  transition: width .3s ease;
+}
+.nav-links a:hover::after { width: 100%; }
+
+/* Hero Section */
+.hero {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+  position: relative;
+}
+.hero h1 {
+  font-size: 3.5rem;
+  background: linear-gradient(90deg, #6ee7b7, #60a5fa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: fadeInDown 1.5s ease;
+}
+.hero p {
+  font-size: 1.2rem;
+  color: #cbd5e1;
+  margin-top: 10px;
+}
+
+@keyframes fadeInDown {
+  0% { opacity: 0; transform: translateY(-30px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Buttons */
+.btn {
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 25px;
+  background: linear-gradient(90deg, #60a5fa, #6ee7b7);
+  color: #0f172a;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+.btn:hover {
+  background: linear-gradient(90deg, #3b82f6, #10b981);
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(96,165,250,0.4);
+}
+.btn::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.4), transparent);
+  transition: left 0.6s ease;
+}
+.btn:hover::after { left: 100%; }
+
+/* Cards */
+.card {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 2rem;
+  transition: all 0.4s ease;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+.card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 8px 20px rgba(96,165,250,0.3);
+}
+
+/* Profile Section */
+.profile-card img {
+  border-radius: 50%;
+  border: 3px solid var(--accent);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+.profile-card img:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 20px var(--accent);
+}
+
+/* Skill Badges */
+.skill-badge {
+  display: inline-block;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  background: linear-gradient(90deg, var(--accent-2), var(--accent));
+  color: #fff;
+  font-size: 0.9rem;
+  margin: 0.3rem;
+  box-shadow: 0 0 10px rgba(96,165,250,0.3);
+  animation: floatBadge 5s ease-in-out infinite;
+}
+@keyframes floatBadge {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+/* Animations for Scroll Reveal */
+[data-animate] {
+  opacity: 0;
+  transform: translateY(50px);
+  transition: opacity 0.9s ease, transform 0.9s ease;
+}
+[data-animate].visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Contact Form */
+.contact-form input, .contact-form textarea {
+  width: 100%;
+  padding: 0.8rem;
+  border: none;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
+}
+.contact-form input:focus, .contact-form textarea:focus {
+  outline: none;
+  box-shadow: 0 0 6px var(--accent);
+}
+
+/* Footer */
+footer {
+  background: linear-gradient(90deg, rgba(110,231,183,0.1), rgba(96,165,250,0.1));
+  padding: 2rem 1rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #cbd5e1;
+  position: relative;
+}
+footer::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+}
+
+/* Back to Top Button */
+#backToTop {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 5px 10px rgba(0,0,0,0.3);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 999;
+}
+#backToTop.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Responsive Media Queries */
+@media (max-width: 1024px) {
+  .hero h1 { font-size: 2.8rem; }
+  .card { padding: 1.5rem; }
+}
+@media (max-width: 768px) {
+  nav { flex-direction: column; }
+  .nav-links { margin-top: 10px; }
+  .hero h1 { font-size: 2.2rem; }
+}
+@media (max-width: 480px) {
+  .hero h1 { font-size: 1.8rem; }
+  .btn { padding: 0.6rem 1.2rem; }
+}
+
+/* Advanced Decorations */
+.glow-border {
+  border: 2px solid transparent;
+  background: linear-gradient(90deg, #6ee7b7, #60a5fa);
+  background-clip: padding-box;
+  position: relative;
+}
+.glow-border::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(90deg, #6ee7b7, #60a5fa);
+  filter: blur(8px);
+  z-index: -1;
+}
+
+/* Loader Animation */
+.loader {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: #0b1220;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+.loader span {
+  width: 20px; height: 20px;
+  margin: 0 5px;
+  background: var(--accent);
+  border-radius: 50%;
+  animation: bounce 1s infinite alternate;
+}
+.loader span:nth-child(2) { animation-delay: 0.2s; }
+.loader span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes bounce {
+  to { transform: translateY(-15px); opacity: 0.6; }
+}
+
+/* Tooltip */
+.tooltip {
+  position: relative;
+  cursor: pointer;
+}
+.tooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.8);
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 4px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.tooltip:hover::after {
+  opacity: 1;
+}
+
+/* Parallax Background */
+.parallax {
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+/* Floating Animation */
+@keyframes floating {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+.floating {
+  animation: floating 3s ease-in-out infinite;
+}
+
+/* Text Gradient Animation */
+.text-gradient {
+  background: linear-gradient(90deg, #6ee7b7, #60a5fa, #a78bfa);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradientShift 5s ease infinite;
+}
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Fade Up Animation */
+.fade-up {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.fade-up.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Blinking Cursor */
+.cursor-blink::after {
+  content: '|';
+  animation: blink 1s infinite;
+}
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
