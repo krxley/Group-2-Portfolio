@@ -363,4 +363,115 @@ footer.site-footer a:hover{text-decoration:underline;color:var(--accent-2)}
 @media(max-width:900px){.about{grid-template-columns:1fr}.navbar{flex-direction:column;}}
 @media(max-width:600px){.hero h1{font-size:1.8rem}.card img{height:150px}}
 
-/* End of file */
+/* Adds parallax effects, gradient animations, glowing hover, and scroll reveals */
+
+/* Parallax background for hero */
+.hero{
+  position:relative;
+  background:linear-gradient(160deg,rgba(96,165,250,0.15),rgba(110,231,183,0.1));
+  overflow:hidden;
+}
+.hero::before{
+  content:'';
+  position:absolute;inset:0;
+  background:url('https://www.transparenttextures.com/patterns/cubes.png');
+  opacity:0.06;
+  animation:move-bg 20s linear infinite;
+}
+@keyframes move-bg{from{background-position:0 0;}to{background-position:1000px 0;}}
+
+/* Glowing buttons */
+.btn{
+  position:relative;
+  overflow:hidden;
+}
+.btn::after{
+  content:'';
+  position:absolute;
+  top:0;left:-100%;width:100%;height:100%;
+  background:linear-gradient(120deg,transparent,rgba(255,255,255,0.4),transparent);
+  transition:all .6s ease;
+}
+.btn:hover::after{left:100%;}
+
+/* Card glow animation */
+.card:hover{
+  box-shadow:0 0 15px rgba(110,231,183,0.25),0 0 30px rgba(96,165,250,0.25);
+}
+
+/* Smooth section fade-in */
+section{opacity:0;transform:translateY(40px);transition:opacity 1s ease,transform 1s ease;}
+section.visible{opacity:1;transform:translateY(0);}
+
+/* Floating skill badges */
+.skill-badge{
+  background:linear-gradient(90deg,var(--accent-2),var(--accent));
+  color:#fff;box-shadow:0 0 10px rgba(96,165,250,0.3);
+  animation:floatBadge 5s ease-in-out infinite;
+}
+@keyframes floatBadge{
+  0%,100%{transform:translateY(0);}
+  50%{transform:translateY(-4px);}
+}
+
+/* Animated underline links */
+.nav-links a{
+  position:relative;
+}
+.nav-links a::after{
+  content:'';
+  position:absolute;bottom:0;left:0;
+  width:0;height:2px;background:var(--accent);
+  transition:width .3s ease;
+}
+.nav-links a:hover::after{width:100%;}
+
+/* Contact input glow */
+.contact-form input:focus,.contact-form textarea:focus{
+  box-shadow:0 0 6px var(--accent);
+}
+
+/* Footer gradient line */
+footer.site-footer{
+  border-top:none;
+  background:linear-gradient(90deg,rgba(110,231,183,0.1),rgba(96,165,250,0.1));
+  padding-top:2rem;
+  position:relative;
+}
+footer.site-footer::before{
+  content:'';
+  position:absolute;top:0;left:0;width:100%;height:2px;
+  background:linear-gradient(90deg,var(--accent),var(--accent-2));
+}
+
+/* Responsive cards scaling */
+@media(max-width:700px){
+  .card{transform:none !important;}
+  .hero h1{font-size:2rem;}
+  .portfolio-grid{gap:1rem;}
+}
+
+/* Glow effect on profile images */
+.profile-card img:hover{
+  box-shadow:0 0 15px var(--accent-2);
+  transform:scale(1.05);
+  transition:transform .3s ease,box-shadow .3s ease;
+}
+
+/* Smooth scroll and selection color */
+html{scroll-behavior:smooth;}
+::selection{background:var(--accent-2);color:#fff;}
+
+/* Animated background gradient */
+body{
+  background:linear-gradient(-45deg,#0f1724,#0b1220,#14243c,#0b1b2d);
+  background-size:400% 400%;
+  animation:gradientMove 12s ease infinite;
+}
+@keyframes gradientMove{
+  0%{background-position:0% 50%;}
+  50%{background-position:100% 50%;}
+  100%{background-position:0% 50%;}
+}
+
+/* End enhanced CSS */
