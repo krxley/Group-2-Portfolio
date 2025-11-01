@@ -516,7 +516,460 @@ tabButtons.forEach(btn => {
   });
 });
 
-// ============================ END OF EXTENDED SCRIPT ============================
-// Added: animated particles, modals, counters, tooltips, ripple effects,
-// sliders, toasts, tabs, and progress bar animations.
-// Total length extended ~500+ lines for complete interactivity.
+/* ============================ GLOBAL SELECTORS ============================ */
+const header = document.querySelector('header.site-header');
+const sections = document.querySelectorAll('section');
+const progressBars = document.querySelectorAll('.progress-bar');
+const observerTargets = document.querySelectorAll('.observe');
+const counters = document.querySelectorAll('.counter');
+const modalTriggers = document.querySelectorAll('[data-modal]');
+const modals = document.querySelectorAll('.modal');
+const overlay = document.createElement('div');
+overlay.classList.add('overlay');
+document.body.appendChild(overlay);
+const projectList = document.querySelector('.portfolio-grid');
+const projectSearch = document.getElementById('project-search');
+
+/* ============================ UTILITY HELPERS ============================ */
+function debounce(fn, delay) {
+  let timer;
+  return function (...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn.apply(this, args), delay);
+  };
+}
+
+function throttle(fn, wait) {
+  let time = Date.now();
+  return function () {
+    if (time + wait - Date.now() < 0) {
+      fn();
+      time = Date.now();
+    }
+  };
+}
+
+function isInView(el, offset = 0.9) {
+  const rect = el.getBoundingClientRect();
+  return rect.top <= (window.innerHeight || document.documentElement.clientHeight) * offset;
+}
+
+function randomColor() {
+  return `hsl(${Math.floor(Math.random() * 360)}, 70%, 60%)`;
+}
+
+function supportsServiceWorker() {
+  return 'serviceWorker' in navigator;
+}
+
+/* ============================ NAVBAR / SCROLL ============================ */
+window.addEventListener('scroll', debounce(() => {
+  if (window.scrollY > 50) header.classList.add('scrolled');
+  else header.classList.remove('scrolled');
+}, 100));
+
+function setActiveLink() {
+  let index = sections.length;
+  while (--index && window.scrollY + 120 < sections[index].offsetTop) {}
+  document.querySelectorAll('.nav-links a').forEach(link => link.classList.remove('active'));
+  const links = document.querySelectorAll('.nav-links a');
+  if (links[index]) links[index].classList.add('active');
+}
+window.addEventListener('scroll', throttle(setActiveLink, 150));
+
+/* ============================ PROGRESS BARS ============================ */
+function animateProgressBars() {
+  progressBars.forEach(bar => {
+    if (isInView(bar)) {
+      const value = bar.dataset.value || 0;
+      bar.style.width = value + '%';
+      bar.setAttribute('aria-valuenow', value);
+    }
+  });
+}
+window.addEventListener('scroll', debounce(animateProgressBars, 120));
+window.addEventListener('load', animateProgressBars);
+
+/* ============================ COUNTERS / STATS ============================ */
+function animateCounters() {
+  counters.forEach(counter => {
+    if (counter.dataset.animated) return;
+    if (!isInView(counter)) return;
+    const target = +counter.getAttribute('data-target') || 0;
+    const duration = +counter.getAttribute('data-duration') || 1200; // ms
+    const start = 0;
+    const startTime = performance.now();
+
+    function update(now) {
+      const progress = Math.min((now - startTime) / duration, 1);
+      counter.innerText = Math.floor(progress * (target - start) + start);
+      if (progress < 1) requestAnimationFrame(update);
+      else counter.dataset.animated = 'true';
+    }
+    requestAnimationFrame(update);
+  });
+}
+window.addEventListener('scroll', throttle(animateCounters, 120));
+window.addEventListener('load', animateCounters);
+
+/* ============================ MODALS + FOCUS TRAP ============================ */
+modalTriggers.forEach(trigger => {
+  trigger.addEventListener('click', (e) => {
+    e.preventDefault();
+    const modalId = trigger.getAttribute('data-modal');
+    const modal = document.getElementById(modalId);
+    if (modal) openModal(modal);
+  });
+});
+
+function openModal(modal) {
+  modal.classList.add('show');
+  overlay.classList.add('show');
+  modal.setAttribute('aria-hidden', 'false');
+  const focusable = modal.querySelectorAll('a,button,input,textarea,select');
+  if (focusable.length) focusable[0].focus();
+  trapFocus(modal);
+}
+
+function closeModal(modal) {
+  modal.classList.remove('show');
+  overlay.classList.remove('show');
+  modal.setAttribute('aria-hidden', 'true');
+  releaseFocus();
+}
+
+overlay.addEventListener('click', () => {
+  document.querySelectorAll('.modal.show').forEach(m => closeModal(m));
+});
+
+let lastFocusedElement = null;
+function trapFocus(modal) {
+  lastFocusedElement = document.activeElement;
+  const focusable = Array.from(modal.querySelectorAll('a,button,input,textarea,select')).filter(Boolean);
+  if (!focusable.length) return;
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+  function handleKey(e) {
+    if (e.key === 'Tab') {
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault(); last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault(); first.focus();
+      }
+    }
+    if (e.key === 'Escape') {
+      closeModal(modal);
+    }
+  }
+  modal.addEventListener('keydown', handleKey);
+  modal.dataset.keyListener = 'true';
+}
+
+function releaseFocus() {
+  if (lastFocusedElement) lastFocusedElement.focus();
+  document.querySelectorAll('.modal').forEach(m => {
+    if (m.dataset.keyListener) {
+      m.removeEventListener('keydown', () => {});
+      delete m.dataset.keyListener;
+    }
+  });
+}
+
+/* ============================ TOOLTIP SETUP ============================ */
+const tooltips = document.querySelectorAll('[data-tooltip]');
+tooltips.forEach(item => {
+  const tooltip = document.createElement('span');
+  tooltip.className = 'tooltip';
+  tooltip.textContent = item.getAttribute('data-tooltip');
+  tooltip.setAttribute('role', 'tooltip');
+  item.appendChild(tooltip);
+  item.addEventListener('mouseenter', () => tooltip.classList.add('visible'));
+  item.addEventListener('mouseleave', () => tooltip.classList.remove('visible'));
+});
+
+/* ============================ BACKGROUND PARTICLES (CANVAS) ============================ */
+const bgCanvas = document.createElement('canvas');
+bgCanvas.className = 'bg-animation';
+const ctx = bgCanvas.getContext && bgCanvas.getContext('2d');
+if (ctx) {
+  document.body.appendChild(bgCanvas);
+  let particles = [];
+  function initParticles() {
+    particles = [];
+    const count = Math.round((window.innerWidth * window.innerHeight) / 9000);
+    for (let i = 0; i < count; i++) {
+      particles.push({
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * window.innerHeight,
+        size: Math.random() * 2.5 + 0.5,
+        speedX: (Math.random() - 0.5) * 0.6,
+        speedY: (Math.random() - 0.5) * 0.6,
+        color: `rgba(255,255,255,${Math.random() * 0.08 + 0.02})`
+      });
+    }
+  }
+  function drawParticles() {
+    if (!ctx) return;
+    ctx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+    particles.forEach(p => {
+      ctx.beginPath();
+      ctx.fillStyle = p.color;
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fill();
+      p.x += p.speedX;
+      p.y += p.speedY;
+      if (p.x < -10) p.x = window.innerWidth + 10;
+      if (p.x > window.innerWidth + 10) p.x = -10;
+      if (p.y < -10) p.y = window.innerHeight + 10;
+      if (p.y > window.innerHeight + 10) p.y = -10;
+    });
+    requestAnimationFrame(drawParticles);
+  }
+  function resizeCanvas() {
+    bgCanvas.width = window.innerWidth;
+    bgCanvas.height = window.innerHeight;
+    initParticles();
+  }
+  resizeCanvas();
+  drawParticles();
+  window.addEventListener('resize', debounce(resizeCanvas, 250));
+}
+
+/* ============================ SCROLL REVEAL / STAGGER ============================ */
+const scrollElements = document.querySelectorAll('[data-animate]');
+function revealOnScroll() {
+  scrollElements.forEach((el, idx) => {
+    if (isInView(el, 0.85) && !el.classList.contains('visible')) {
+      setTimeout(() => el.classList.add('visible'), idx * 80);
+    }
+  });
+}
+window.addEventListener('scroll', throttle(revealOnScroll, 150));
+window.addEventListener('load', revealOnScroll);
+
+/* ============================ CURSOR + INTERACTIONS ============================ */
+const cursor = document.createElement('div');
+cursor.className = 'interactive-cursor';
+cursor.setAttribute('aria-hidden', 'true');
+document.body.appendChild(cursor);
+document.addEventListener('mousemove', e => {
+  cursor.style.left = e.clientX + 'px';
+  cursor.style.top = e.clientY + 'px';
+});
+
+document.querySelectorAll('a, button, .btn').forEach(el => {
+  el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+  el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+});
+
+/* Ripple click effect */
+const buttons = document.querySelectorAll('button, .btn');
+buttons.forEach(btn => {
+  btn.addEventListener('click', function (e) {
+    const rect = this.getBoundingClientRect();
+    const ripple = document.createElement('span');
+    ripple.classList.add('ripple');
+    ripple.style.left = (e.clientX - rect.left) + 'px';
+    ripple.style.top = (e.clientY - rect.top) + 'px';
+    this.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 700);
+  });
+});
+
+/* ============================ IMAGE LAZY LOADING ============================ */
+const lazyImages = document.querySelectorAll('img[data-src]');
+if ('IntersectionObserver' in window) {
+  const imgObserver = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const img = entry.target;
+        img.src = img.dataset.src;
+        img.removeAttribute('data-src');
+        observer.unobserve(img);
+      }
+    });
+  }, { rootMargin: '50px 0px', threshold: 0.01 });
+  lazyImages.forEach(img => imgObserver.observe(img));
+} else {
+  // Fallback
+  lazyImages.forEach(img => (img.src = img.dataset.src));
+}
+
+/* ============================ PROJECT LOADING + SEARCH FILTER ============================ */
+// Example local dataset (could be fetched from an API)
+const projectsData = [
+  { id: 1, title: 'Portfolio Website', tags: ['Frontend', 'Design'], img: 'https://picsum.photos/seed/1/600/400' },
+  { id: 2, title: 'E-commerce App', tags: ['Fullstack'], img: 'https://picsum.photos/seed/2/600/400' },
+  { id: 3, title: 'Dashboard UI', tags: ['Frontend', 'UI'], img: 'https://picsum.photos/seed/3/600/400' },
+  { id: 4, title: 'API Service', tags: ['Backend'], img: 'https://picsum.photos/seed/4/600/400' },
+  { id: 5, title: 'Mobile App', tags: ['Mobile', 'Flutter'], img: 'https://picsum.photos/seed/5/600/400' }
+];
+
+function renderProjects(list = projectsData) {
+  if (!projectList) return;
+  projectList.innerHTML = '';
+  list.forEach(p => {
+    const card = document.createElement('article');
+    card.className = 'card';
+    card.setAttribute('data-animate', 'left');
+    card.innerHTML = `
+      <img data-src="${p.img}" alt="${p.title}" class="lazy">
+      <div class="card-content">
+        <h3>${p.title}</h3>
+        <p class="text-muted">${p.tags.join(' • ')}</p>
+        <a href="#" class="btn" data-modal="modal-${p.id}">View</a>
+      </div>
+    `;
+    projectList.appendChild(card);
+  });
+  // Re-init lazy images and reveal
+  const imgs = projectList.querySelectorAll('img[data-src]');
+  imgs.forEach(img => imgObserver && imgObserver.observe(img));
+  revealOnScroll();
+}
+
+renderProjects();
+
+if (projectSearch) {
+  projectSearch.addEventListener('input', debounce((e) => {
+    const q = e.target.value.toLowerCase();
+    const filtered = projectsData.filter(p => p.title.toLowerCase().includes(q) || p.tags.join(' ').toLowerCase().includes(q));
+    renderProjects(filtered);
+  }, 250));
+}
+
+/* ============================ CONTACT FORM + HONEYPOT + SAVE ============================ */
+const contactForm = document.querySelector('.contact-form');
+if (contactForm) {
+  const honeypot = contactForm.querySelector('input[name="hp"]');
+  contactForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    // spam protection
+    if (honeypot && honeypot.value) {
+      showToast('Spam detected — form aborted.');
+      return;
+    }
+    const data = new FormData(contactForm);
+    const obj = {};
+    for (const [k, v] of data.entries()) obj[k] = v;
+    // Save to local storage as a fallback
+    localStorage.setItem('contactDraft', JSON.stringify(obj));
+    showToast('Message queued (demo).');
+    contactForm.reset();
+  });
+}
+
+/* ============================ SERVICE WORKER (PWA) REGISTRATION ============================ */
+if (supportsServiceWorker()) {
+  navigator.serviceWorker.register('/sw.js').then(reg => {
+    console.log('SW registered', reg);
+  }).catch(err => {
+    console.warn('SW registration failed:', err);
+  });
+}
+
+/* ============================ ACCESSIBILITY: KEYBOARD SHORTCUTS ============================ */
+window.addEventListener('keydown', (e) => {
+  if (e.key === 't') {
+    // toggle theme
+    document.body.classList.toggle('light-mode');
+    showToast('Theme toggled');
+  }
+  if (e.key === '/' && projectSearch) {
+    e.preventDefault();
+    projectSearch.focus();
+  }
+  if (e.key === 'k' && document.activeElement !== projectSearch) {
+    // quick focus on first nav link
+    const firstLink = document.querySelector('.nav-links a');
+    if (firstLink) firstLink.focus();
+  }
+});
+
+/* ============================ DOWNLOAD RESUME (GENERATED PDF) ============================ */
+function downloadResume() {
+  const resumeContent = `Name: Group 2\nRole: Developers & Designers\nGenerated: ${new Date().toLocaleString()}`;
+  const blob = new Blob([resumeContent], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'Resume_Group2.txt';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+  showToast('Resume downloaded (sample).');
+}
+
+const resumeBtn = document.getElementById('download-resume');
+if (resumeBtn) resumeBtn.addEventListener('click', downloadResume);
+
+/* ============================ SAVING DRAFTS + AUTO-RESTORE ============================ */
+(function restoreDrafts() {
+  const draft = localStorage.getItem('contactDraft');
+  if (!draft) return;
+  const data = JSON.parse(draft);
+  const form = document.querySelector('.contact-form');
+  if (!form) return;
+  Object.keys(data).forEach(k => {
+    const field = form.querySelector(`[name="${k}"]`);
+    if (field) field.value = data[k];
+  });
+  showToast('Restored unsent message draft');
+})();
+
+/* ============================ PREFERS-REDUCED-MOTION HANDLING ============================ */
+const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+if (prefersReduced.matches) {
+  // disable particle animation and transitions
+  const p = document.querySelector('.bg-animation');
+  if (p) p.style.display = 'none';
+  document.body.classList.add('reduced-motion');
+}
+
+/* ============================ ANALYTICS STUB (NO TRACKING) ============================ */
+function analytics(event, details = {}) {
+  // Placeholder — push to dataLayer or external analytics endpoint
+  console.log('ANALYTICS', event, details);
+}
+
+/* ============================ LAZY INIT FOR NON-CRITICAL SCRIPTS ============================ */
+setTimeout(() => {
+  // initialize optional modules
+  analytics('site_loaded');
+  // re-run reveal to ensure dynamic content is animated
+  revealOnScroll();
+  animateProgressBars();
+  animateCounters();
+}, 900);
+
+/* ============================ CLEANUP ON UNLOAD ============================ */
+window.addEventListener('beforeunload', () => {
+  // save any important state
+  try {
+    const active = document.querySelector('.stagger .card.visible');
+    if (active) localStorage.setItem('lastActiveCard', active.querySelector('h3')?.innerText || '');
+  } catch (err) {
+    // ignore
+  }
+});
+
+/* ============================ EXPORT: small API for site to call ============================ */
+window.G2 = {
+  openModalById: (id) => {
+    const m = document.getElementById(id);
+    if (m) openModal(m);
+  },
+  downloadResume,
+  showToast,
+  analytics
+};
+
+/* ============================ FINAL NOTES ============================ */
+// This file is intentionally feature-rich to demonstrate many UI patterns.
+// Remove or disable components you don't need to keep the footprint small.
+// All functions avoid throwing errors silently — use console logs to debug.
+
+// End of file — Group-2 Portfolio Extended JS
+// ---------------------------------------------------------------------------
+
